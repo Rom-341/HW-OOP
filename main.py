@@ -44,8 +44,9 @@ class Student:  # определяем класс студента
                 f"Завершенные курсы: {self.finished_courses}" + "\n"
         )
 
-    # def __lt__(self, other):
-    #     return self.__value < other.__value
+# сравнение студентов по средней оценке за домашние задания
+    def __lt__(self, other):
+        return self.avg_grade() < other.avg_grade()
 
 
 # определяем класс ментора
@@ -78,6 +79,10 @@ class Lecturer(Mentor):
                 f"Средняя оценка за лекции: {self.avg_grade()}" + "\n"
         )
 
+# сравнение студентов по средней оценке за домашние задания
+    def __lt__(self, other):
+        return self.avg_grade() < other.avg_grade()
+
 
 # определяем дочерний класс экспертов
 class Reviewer(Mentor):
@@ -107,14 +112,6 @@ class Reviewer(Mentor):
         else:
             return 'Ошибка'
 
-    # находим среднюю оценку за домашние задания
-    # def _average_grade(self, course, grades):
-    #     for key, value in self.grades_student.items():
-    #         if key == course:
-    #             grades += value
-    #         print(type(grades))
-    #     return round(sum(grades) / len(grades), 1)
-
 
 some_student1 = Student("Roy", "Eman", "male")
 some_student1.courses_in_progress += ["Python"]
@@ -134,22 +131,29 @@ some_reviewer.rate_hw(some_student1, "Git", 4)
 some_reviewer.rate_hw(some_student2, "Python", 3)
 some_reviewer.rate_hw(some_student2, "Git", 3)
 
-some_lecturer = Lecturer("Jack", "Gog")
-some_lecturer.courses_attached += ["Python"]
-some_lecturer.courses_attached += ["Git"]
+some_lecturer1 = Lecturer("Jack", "Gog")
+some_lecturer1.courses_attached += ["Python"]
+some_lecturer1.courses_attached += ["Git"]
 
-some_student1.rate_lecturer(some_lecturer, "Python", 2)
-some_student1.rate_lecturer(some_lecturer, "Python", 6)
-some_student1.rate_lecturer(some_lecturer, "Git", 5)
+some_lecturer2 = Lecturer("Иван", "Иванов")
+some_lecturer2.courses_attached += ["Python"]
+some_lecturer2.courses_attached += ["Git"]
 
-some_student2.rate_lecturer(some_lecturer, "Python", 1)
-some_student2.rate_lecturer(some_lecturer, "Python", 5)
-some_student2.rate_lecturer(some_lecturer, "Git", 4)
+some_student1.rate_lecturer(some_lecturer1, "Python", 2)
+some_student1.rate_lecturer(some_lecturer2, "Python", 6)
+some_student1.rate_lecturer(some_lecturer1, "Git", 5)
+
+some_student2.rate_lecturer(some_lecturer1, "Python", 1)
+some_student2.rate_lecturer(some_lecturer2, "Python", 5)
+some_student2.rate_lecturer(some_lecturer1, "Git", 4)
 
 print(some_reviewer)
-print(some_lecturer)
+print(some_lecturer1)
+print(some_lecturer2)
 print(some_student1)
 print(some_student2)
+print(some_student1.avg_grade() < some_student2.avg_grade())
+print(some_lecturer1.avg_grade() < some_lecturer2.avg_grade())
 
 # расчет средней оценки за всех студентов
 students_lst = [some_student1, some_student2]
@@ -159,17 +163,30 @@ def average_rating_for_all_students(students_lst, course):
     all_grade = []
     if students_lst:
         for student in students_lst:
-            for key, grade in student.grades.items():
+            for key, grade in student.grades_student.items():
                 if key == course:
-                    all_grade += grade[course]
-                    print(all_grade)
+                    all_grade += grade
+                    # print(all_grade)
         return round(sum(all_grade) / len(all_grade), 1)
 
 
 print(average_rating_for_all_students(students_lst, "Python"))
+print(average_rating_for_all_students(students_lst, "Git"))
 
 
-# сравнение студентов по оценке за домашние задания
-# def __lt__(self, other):
-#     return self.__value < other.__value
-# print(some_student1.avg_grade() < some_student2.avg_grade())
+lecturer_lst = [some_lecturer1, some_lecturer2]
+
+
+def average_rating_for_all_lecturer(lecturer_lst, course):
+    all_grade_1 = []
+    if lecturer_lst:
+        for lecturer in lecturer_lst:
+            for key, grade in lecturer.grades_lecturer.items():
+                if key == course:
+                    all_grade_1 += grade
+                    # print(all_grade_1)
+        return round(sum(all_grade_1) / len(all_grade_1), 1)
+
+
+print(average_rating_for_all_lecturer(lecturer_lst, "Python"))
+print(average_rating_for_all_lecturer(lecturer_lst, "Git"))
